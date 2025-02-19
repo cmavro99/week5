@@ -1,0 +1,132 @@
+---
+title: "exercise one"
+format: pdf
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+anscombe_quartet = readRDS("exercise-set_1-20250213/anscombe quartet.rds")
+str(anscombe_quartet)
+```
+
+*What does the function str() do?*
+
+It gives you an overview of the data's structure, like the variables and the nature of the variables.
+
+```{r}
+anscombe_quartet %>% 
+  group_by(dataset) %>% 
+  summarise(
+    mean_x    = mean(x),
+    mean_y    = mean(y),
+    min_x     = min(x),
+    min_y     = min(y),
+    max_x     = max(x),
+    max_y     = max(y),
+    crrltn    = cor(x, y)
+  )
+
+```
+
+*What do the summary statistics tell us about the different datasets?*
+
+They seem virtually identical, with the min and max digits being very similar and means being exactly the same.
+
+```{r}
+library(ggplot2)
+anscombe_quartet <- ggplot(anscombe_quartet, aes(x=x,y=y)) +
+  geom_point() + 
+  geom_smooth(method = "lm",formula = "y ~ x") +
+  facet_wrap(~dataset)
+print(anscombe_quartet)
+```
+
+```{r}
+ggsave("anscombe_plot.png", plot = anscombe_quartet, width = 5, height = 5, units = "in", dpi = 300)
+```
+
+*What do the plots tell us about the different datasets?*
+
+Dataset 1 follows a rough linear trend, no extreme outliers
+
+Dataset 2 is curved, does not follow line of best fit
+
+Dataset 3 roughly linear as well, one extreme outlier
+
+Dataset 4 shows a cluster around one x digit with one extreme outlier
+
+*Describe the relationship between x and y in the different datasets.*
+
+1 As x increases, y increases in a linear fashion - positive relationship
+
+2 Y increases faster when X increases
+
+3 Nearly linear, may be a few outliers that pull the line up or down (positive)
+
+4 None, but outliers create positive slope on fitted line
+
+*Would linear regression be an appropriate statistical model to analyse the x-y relationship in each dataset?*
+
+1 yes, simple straight line
+
+2 no, curved pattern, not linear
+
+3 maybe?
+
+4 No, linear regression would not be representative of cluster pattern
+
+*What conclusions can you draw for the plots and summary statistics?*
+
+Summary statistics can be misleading and mask important aspects of a data set. Pairing them with plots is essential in order to assess any nuances in the data.
+
+### Problem 2
+
+```{r}
+datasaurus_dozen = readRDS("exercise-set_1-20250213/datasaurus_dozen.rds")
+library(tidyverse)
+
+```
+
+```{r}
+str(datasaurus_dozen)
+datasaurus_dozen
+```
+
+*Print descriptive statistics and make a nicely formatted table*
+
+```{r}
+datasaurus_summary <- datasaurus_dozen %>%
+  group_by(dataset) %>%
+  summarise_if(is.double, list(mean = mean, sd = sd))
+print(datasaurus_summary)
+```
+
+*Calculate the correlations for x and y*
+
+```{r}
+r1 <- lm(x ~ y, datasaurus_dozen)
+summary(r1)
+```
+
+*Plot their relationships including the line of best fit.*
+
+```{r}
+library(ggplot2)
+library(GGally)
+datasaurus_plot <- ggplot(datasaurus_dozen, aes(x = x, y = y)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE, color = "gray") +
+  facet_wrap(~ dataset) +
+  labs(
+    title = "Datasaurus Dozen: Relationship between x and y",
+    x = "x",
+    y = "y"
+  ) +
+  theme_minimal()
+print(datasaurus_plot)
+ggsave("datasaurus_plot.png", plot = datasaurus_plot, width = 5, height = 5, units = "in", dpi = 300)
+```
