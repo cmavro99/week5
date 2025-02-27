@@ -5,11 +5,11 @@ editor: visual
 ---
 
 ```{r}
-library(tidyverse)
+library(tidyverse) 
 ```
 
 ```{r}
-anscombe_quartet = readRDS("exercise-set_1-20250213/anscombe quartet.rds")
+  anscombe_quartet = readRDS("exercise-set_1-20250213/anscombe quartet.rds")
 str(anscombe_quartet)
 ```
 
